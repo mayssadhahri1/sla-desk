@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Installer les dépendances
+        run: npm install --no-audit --no-fund
+
+      - name: Vérification des types (TypeScript)
+        run: npm run typecheck
+
+      - name: Qualité du code (ESLint)
+        run: npm run lint
+
+      - name: Tests (Vitest + Supertest)
+        run: npm test
+
+      - name: Compilation
+        run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construire l'image Docker
+        run: docker build -t sla-desk .

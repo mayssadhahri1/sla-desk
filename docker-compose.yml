@@ -1,0 +1,17 @@
+# Lancement : JWT_SECRET=une-cle-secrete docker compose up --build
+services:
+  sla-desk:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?Définir JWT_SECRET}
+      JWT_EXPIRES_IN: 8h
+      # Comptes de démonstration : à désactiver pour un vrai déploiement
+      SEED_DEMO: "true"
+    volumes:
+      - sla-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  sla-data:
